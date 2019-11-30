@@ -1,0 +1,10 @@
+<template>
+        <lightning-card class="slds-p-horizontal_medium" title="Array List Traverse">
+
+    <template for:each={myList} for:item="myRecord">
+        <lightning-input type="text" key={myRecord.Id} data-id={myRecord.Id} name="input2"
+                        value={myRecord.Name} onchange={updateValues}></lightning-input>
+
+    </template>
+    </lightning-card>
+</template>

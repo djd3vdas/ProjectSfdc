@@ -1,0 +1,5 @@
+<aura:component access="global" 
+                                implements="force:hassobjectName,force:appHostable,force:hasRecordId,flexipage:availableForAllPageTypes,force:lightningQuickAction">>
+Hello 
+
+</aura:component>

@@ -1,0 +1,16 @@
+<template>
+    <lightning-card>
+
+        <br></br>
+        <p class="slds-p-horizontal_medium">List of Objects </p>
+
+         <div style="height: 200px;">
+            <lightning-datatable
+                key-field="id"
+                data={tableData}
+                
+                columns={columns}>
+            </lightning-datatable>
+        </div>
+</lightning-card>
+</template>

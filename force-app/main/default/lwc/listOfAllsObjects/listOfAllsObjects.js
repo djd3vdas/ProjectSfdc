@@ -1,0 +1,102 @@
+/* eslint-disable no-console */
+import { LightningElement, track, wire } from 'lwc';
+
+import retreieveObjects from '@salesforce/apex/DescribeObjectHelper.retreieveObjects';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
+
+let i=0;
+//define data table columns
+const columns = [
+    { label: 'Object Label', fieldName: 'ObjectLabel' },
+    { label: 'Object API Name', fieldName: 'ObjectAPIName' },
+];
+export default class listOfAllsObjects extends LightningElement {
+
+     //this is for showing toast message
+     _title = 'Retrieve Records Error';
+     message = 'Select atleast one field';
+     variant = 'error';
+     variantOptions = [
+         { label: 'error', value: 'error' },
+         { label: 'warning', value: 'warning' },
+         { label: 'success', value: 'success' },
+         { label: 'info', value: 'info' },
+     ];
+    @track objectItems = [];    //this holds the array for records with table data
+
+    @track columns = columns;   //columns for List of Objects datatable
+    @track selectedFieldsValue='';  //Objects selected in datatable
+    @track tableData;           //data for list of Objects datatable
+
+    @wire(retreieveObjects)
+    wiredObjects({ error, data }) {
+        if (data) {
+
+            for(i=0; i<data.length; i++) {
+                /*console.log('MasterLabel=' + data[i].MasterLabel
+                    + 'QualifiedApiName=' + data[i].QualifiedApiName);*/
+                /*this.items = [...this.items ,{value: data[i].QualifiedApiName,
+                                              label: data[i].MasterLabel}];*/
+                this.objectItems = [
+                {ObjectLabel: data[i].MasterLabel, ObjectAPIName: data[i].QualifiedApiName},...this.objectItems];
+        }
+            this.tableData = this.objectItems;
+            this.error = undefined;
+        } else if (error) {
+            this.error = error;
+            this.data = undefined;
+        }
+    }
+
+    //this method is fired based on row selection of List of Objects datatable
+    handleRowAction(event){
+        const selectedRows = event.detail.selectedRows;
+        this.selectedFieldsValue = '';
+        // Display that fieldName of the selected rows in a comma delimited way
+        for ( i = 0; i < selectedRows.length; i++){
+            if(this.selectedFieldsValue !=='' ){
+                this.selectedFieldsValue = this.selectedFieldsValue + ','
+                                        + selectedRows[i].ObjectAPIName;
+            }
+            else{
+                this.selectedFieldsValue = selectedRows[i].ObjectAPIName;
+            }
+        }
+        console.log( this.selectedFieldsValue);
+    }
+
+    //this method is fired when retrieve records button is clicked
+    handleClick(){
+        console.log('Hi');
+        const selectedFieldsValueParam = this.selectedFieldsValue;
+        console.log('selectedFieldsValueParam=='+this.selectedFieldsValue);
+        console.log('selectedFieldsValueParam= '+selectedFieldsValueParam);
+
+        //show error if no rows have been selected
+        if(selectedFieldsValueParam ===null || selectedFieldsValueParam===''){
+            const evt = new ShowToastEvent({
+                title: this._title,
+                message: this.message,
+                variant: this.variant,
+            });
+            this.dispatchEvent(evt);
+        }
+        else {
+            //propage event to next component
+            const evtCustomEvent = new CustomEvent('retreive', {
+                detail: { selectedFieldsValueParam}
+                });
+            this.dispatchEvent(evtCustomEvent);
+        }
+    }
+
+    handleResetClick(){
+        this.selectedFieldsValue = '';
+        this.tableData =[];
+        this.tableData = this.objectItems;
+        const evtCustomEvent = new CustomEvent('reset');
+        this.dispatchEvent(evtCustomEvent);
+    }
+
+}

@@ -1,0 +1,24 @@
+<template>
+    <lightning-card>
+
+        <br></br>
+        <p class="slds-p-horizontal_medium">List of Objects </p>
+
+         <div style="height: 200px;">
+            <lightning-datatable
+                key-field="id"
+                data={tableData}
+                onrowselection={handleRowAction}
+                columns={columns}>
+            </lightning-datatable>
+        </div>
+        <lightning-button variant="brand" label="Retrieve Child Objects"
+        title="Retrieve Child Objects" onclick={handleClick}
+        class="slds-m-left_x-small">
+    </lightning-button>
+    <lightning-button variant="brand" label="Reset"
+        title="Reset" onclick={handleResetClick}
+        class="slds-m-left_x-small">
+    </lightning-button>
+    </lightning-card>
+</template>

@@ -1,0 +1,72 @@
+<template>
+     <lightning-card class="slds-p-horizontal_medium" title="Child Objects List">
+
+        <lightning-layout-item padding="around-small">
+            <c-list-of-alls-objects onretreive={retriveRecordHandler} 
+                                            onreset={resetHandler}>
+            </c-list-of-alls-objects>
+        </lightning-layout-item>
+        <template if:true={mapOfListValues}>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col">
+                            <div title="Key">Object Name</div>
+                        </th>
+                        <th scope="col">
+                            <div title="Value">Child Object Name</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                        <template for:each={mapOfListValues} for:item="keyValue">
+                                <tr key={keyValue.key} >
+                                    <td>
+                                        <div key={keyValue.key} data-item={keyValue.key}>{keyValue.key}
+                                        <lightning-input key={keyValue.key} data-id={keyValue.key} data-item={keyValue.key}
+                                        onchange={handleParentSequence} ></lightning-input></div>
+                                    </td>
+                                    <td>
+                                        <template for:each={keyValue.value} for:item="value">
+                                            <div key={value}>
+                                            <b>{value}
+                                                <lightning-input data-item={value} name={value} data-parent={keyValue.key}
+                                                                onchange={handleChildSequence} value={value.childSeqNum}>
+                                                </lightning-input></b> 
+                                            </div>
+                                        </template>
+                                    </td> 
+                                </tr>
+                            </template>
+                 <!--
+                    <template for:each={mapOfListValues} for:item="keyValue">
+                        <tr key={keyValue.key}>
+                            <th scope="col">
+                                <div class="slds-truncate slds-form-element slds-form-element__control" key={keyValue.key} data-item={keyValue.key}>
+                                    <b>{keyValue.key}</b>
+                                    <lightning-input type="number" key={keyValue.key} data-id={keyValue.key} name={keyValue}
+                                                     value={keyValue.ParentSeqValue} onchange={ParentSeqNumChange}
+                                                     data-item={keyValue} >
+                                    </lightning-input>
+                                </div>
+                            </th>
+                            <template for:each={keyValue.value} for:item="value">
+                                <div class="slds-truncate slds-form-element slds-form-element__control" key={value}>
+                                        <b>{value} </b>
+                                        <lightning-input type="number" key={value} name={value} value={value.childSeqNum}
+                                                        data-item={value} data-id={value}
+                                                        onchange={ChildSeqNumChange}></lightning-input><br/> 
+                                </div>
+                            </template>
+                        </tr>
+                    </template> 
+                 -->  
+                </tbody>
+            </table>
+        </template>
+        <lightning-button variant="brand" label="Save and Next"
+                        title="Save" onclick={handleClick}
+                        class="slds-m-left_x-small">
+    </lightning-button>
+        </lightning-card>
+    </template>

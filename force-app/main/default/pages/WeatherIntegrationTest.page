@@ -1,0 +1,14 @@
+<apex:page standardcontroller="Property__c" extensions="TestWeatherIntregation">
+
+    <apex:pageBlock title="{!city} Weather">
+        <apex:pageBlockSection >
+            
+            <apex:outputText label="Temperature" value="{!temp}"/>
+            <apex:outputText label="Pressure" value="{!pressure}"/>
+            <apex:outputText label="Humidity" value="{!humidity}"/>
+            <apex:outputText label="Minimum Temperature" value="{!minTemp}"/>
+            <apex:outputText label="Maximum Temperature" value="{!maxTemp}"/>
+
+        </apex:pageBlockSection>
+    </apex:pageBlock> 
+</apex:page>

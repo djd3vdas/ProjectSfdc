@@ -1,0 +1,31 @@
+<aura:component >
+	<aura:attribute name="input1" type="integer"  description="For 1st Value"/>
+    <aura:attribute name="input2" type="integer"  description="For 2nd Value"/>
+    <aura:attribute name="output" type="integer"  description="For Output"/>
+    <div class="slds-p-around_x-small">
+        <lightning:input type="number" value ="{!v.input1}" label="Enter 1st Value" required="true"/>
+        <lightning:input type="number" value ="{!v.input2}" label="Enter 2nd Value" required="true"/>
+        The Output is=  <b>{!v.output}</b>
+        <br/>
+        <br/>
+        
+     	<aura:if isTrue="{!or(empty(v.input1),empty(v.input2))}" >  
+            
+            <lightning:button class="slds-button slds-button_brand" label="Add" title="Add"  disabled="true"  />
+            <lightning:button class="slds-button slds-button_brand" label="Sub" title="Sub"  disabled="true"  />
+            <lightning:button class="slds-button slds-button_brand" label="Mult" title="Mult" disabled="true" />
+            <lightning:button class="slds-button slds-button_brand" label="Div" title="Div"  disabled="true"  />
+            
+      	<aura:set attribute="else">
+          
+         <lightning:button class="slds-button slds-button_brand" label="Add" title="Add" onclick="{!c.doAdd }" />
+        <lightning:button class="slds-button slds-button_brand" label="Sub" title="Sub" onclick="{!c.doSub }" />
+        <lightning:button class="slds-button slds-button_brand" label="Mult" title="Mult" onclick="{!c.doMult}"/>
+        <lightning:button class="slds-button slds-button_brand" label="Div" title="Div" onclick="{!c.doDiv}" />
+          
+      </aura:set>
+   </aura:if>     
+        <br/>
+        <br/>      
+	</div>        
+</aura:component>

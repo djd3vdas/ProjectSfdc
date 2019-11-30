@@ -1,0 +1,44 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "c/createRelatedRecord": [
+                "createRelatedRecord/createRelatedRecord.js"
+            ],
+            "c/displayContact": [
+                "displayContact/displayContact.js"
+            ],
+            "c/displayObjectsAndFields": [
+                "displayObjectsAndFields/displayObjectsAndFields.js"
+            ],
+            "c/getArrayHtml2JS": [
+                "getArrayHtml2JS/getArrayHtml2JS.js"
+            ],
+            "c/helloWorld": [
+                "helloWorld/helloWorld.js"
+            ],
+            "c/listOfAllsObjects": [
+                "listOfAllsObjects/listOfAllsObjects.js"
+            ],
+            "c/listOfChildObj": [
+                "listOfChildObj/listOfChildObj.js"
+            ],
+            "c/listOfObjects": [
+                "listOfObjects/listOfObjects.js"
+            ],
+            "c/retrieveRecord": [
+                "retrieveRecord/retrieveRecord.js"
+            ]
+        },
+        "experimentalDecorators": true
+    },
+    "include": [
+        "**/*",
+        "../../../../.sfdx/typings/lwc/**/*.d.ts"
+    ],
+    "typeAcquisition": {
+        "include": [
+            "jest"
+        ]
+    }
+}

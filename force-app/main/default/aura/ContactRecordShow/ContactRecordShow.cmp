@@ -1,0 +1,61 @@
+<aura:component access="global" controller="ContactRecordClass"
+                implements="force:hassobjectName,force:appHostable,force:hasRecordId,flexipage:availableForAllPageTypes,force:lightningQuickAction">
+    <aura:attribute name="contactRecord" type="Object[]"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div>
+        <c:CreateContactRecord accntId="{!v.recordId}"/>
+    </div> 
+    
+   <div class="slds-p-around_small"> 
+       <div class="slds-grid slds-wrap">
+          
+        <aura:iteration var="cell" items="{!v.contactRecord}">
+            <div class="slds-col slds-size_1-of-3 slds-p-around_xxx-small">
+                
+            <lightning:card footer="{!cell.Email}" title="{!cell.LastName}"
+                            iconName="action:add_contact">
+                <aura:set attribute="actions">
+                     <lightning:button name="{!cell.Id}" label="View Details" variant="brand"
+                                         onclick="{!c.doRedirect}"/>  
+                </aura:set> 
+                <p class="slds-p-horizontal_small">
+                    
+                     {!cell.Name} <br/>
+                     {!cell.MobilePhone} <br/> 
+                     {!cell.MailingStreet }, {!cell.MailingState}  <br/>
+                </p>
+           </lightning:card>
+           </div>
+        </aura:iteration> 
+       </div>       
+    </div> 
+ <!--   <div class="slds-m-top_xxx-small">
+        <p>
+            <h1><b> List of Contacts Recods </b></h1>
+        </p>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th><strong> Contact Id </strong></th>
+                    <th> <strong> Contact Name </strong> </th>
+                    <th><strong> Mobile Number </strong></th>
+                    <th> <strong> Address </strong> </th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                 <aura:iteration var="cell" items="{!v.contactRecord}">
+                    <tr>
+                        <td> <a href="{! '/'+cell.Id}"> {!cell.Id} </a> </td>
+                        <td> {!cell.Name}  </td>
+                        <td> {!cell.MobilePhone}  </td>
+                        <td> {!cell.MailingStreet }, {!cell.MailingState}  </td>
+                </tr>
+                </aura:iteration> 
+            </tbody>
+        </table>
+
+    </div> -->
+     
+</aura:component>
