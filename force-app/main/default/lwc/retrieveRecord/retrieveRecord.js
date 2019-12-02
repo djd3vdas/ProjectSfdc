@@ -13,7 +13,7 @@ export default class RetrieveRecord extends LightningElement {
     @api objectName = ''; //holding objectName value which is passed from other component
     @api fieldAPINames = ''; //holds list of fields API Name which is passed from other component
     
-    items=[]; 
+    items=[];
     @track data=[];
     @track columns;
     @track isRecordsVisible; //decision to make if this dynamic table to be shown.
@@ -23,8 +23,8 @@ export default class RetrieveRecord extends LightningElement {
                             ,fieldAPINames:'$fieldAPINames'})
     wiredObjects({ error, data }) {
         if (data) {
-            console.log('data in string='+ JSON.stringify(data));            
-            this.data = data;            
+            console.log('data in string='+ JSON.stringify(data));
+            this.data = data;
             this.error = undefined;
         } else if (error) {
             this.error = error;
