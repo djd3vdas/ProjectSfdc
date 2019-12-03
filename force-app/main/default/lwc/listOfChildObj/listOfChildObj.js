@@ -5,6 +5,9 @@
 import { LightningElement, wire, api, track } from 'lwc';
 
 import retrieveChildObjects from '@salesforce/apex/DescribeObjectHelper.getChildObject';
+import createRecords from '@salesforce/apex/DescribeObjectHelper.createRecords';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
 
 let i=0;
 let j=0;
@@ -14,7 +17,7 @@ let itemValue; //holds each item with first letter in upper case
 
 
 export default class listOfChildObj extends LightningElement {
-    
+    @track returnMessage;
     @api objectName = ''; //holding objectName value which is passed from other component
     @api fieldAPINames = ''; //holds list of fields API Name which is passed from other component
     items=[];
@@ -26,8 +29,9 @@ export default class listOfChildObj extends LightningElement {
     childItems=[];
     parentItems=[];
      myList=[
-                        { item : '', value : ''}
+                        { item : '', value : '', parentObjName:''}
                   ];
+   
     //retrieve data from databased
 
     @track mapOfListValues = [];
@@ -85,40 +89,29 @@ export default class listOfChildObj extends LightningElement {
     }
 
     handleParentSequence(event){
-        this.parentItems = [...this.parentItems ,event.target.dataset.item,
-                            event.target.value];
-        // let array_1 =[...this.parentItems];
-        // let array_2 = [event.target.dataset.item, event.target.value];
-        this.Fields.parentVal = event.target.value;
-        this.Fields.parentName = event.target.dataset.item;
-
-        console.log(this.Fields.parentName);
-        // console.log(array_1.assign(array_2));
+            this.Fields.parentVal = event.target.value;
+            this.Fields.parentName = event.target.dataset.item;
 
     }
 
     handleChildSequence(event){
 
-        let array=[{
-                        item : event.target.dataset.item,
-                        value : event.target.value
-                    }];
-
-
-
-       console.log('Length= '+this.myList.length);
        let foundelement = this.myList.find(ele => ele.item == event.target.dataset.item);
+       let foundParentelement = this.myList.find(ele => ele.parentObjName == event.target.dataset.parentObjName);
        console.log('check:'+ JSON.stringify(foundelement));
 
+       //&& foundParentelement === undefined && foundParentelement!==''
        if(foundelement === undefined  && foundelement !==''){
             this.myList =[...this.myList,{item: event.target.dataset.item,
-                           value:event.target.value}];
+                                          value:event.target.value,
+                                          parentObjName:event.target.dataset.parent
+                                          }];
 
 
-       }else if(foundelement !== undefined && this.myList.item !=='' && foundelement !==''){
+       }else if(foundelement !== undefined && this.myList.item !=='' && foundelement !==''
+                                           ){
 
         var listToDelete = [foundelement.item,''];
-        console.log(' Part= '+ JSON.stringify(this.myList));
 
         var end = 0;
         for ( j = 0; j < this.myList.length; j++) {
@@ -130,22 +123,55 @@ export default class listOfChildObj extends LightningElement {
         }
         this.myList.length = end;
 
-            console.log("After Remove== "+JSON.stringify(this.myList));
-            console.log('Inside Else If');
+            // console.log("After Remove== "+JSON.stringify(this.myList));
+            // console.log('Inside Else If');
             foundelement.value= event.target.value;
             console.log(foundelement.item + ' ===foundelement.value=== '+foundelement.value);
-            //this.myList=[...this.myList];
-            this.myList =[...this.myList,{item: foundelement.item,
-                           value:foundelement.value}];
-            console.log('MyList=== '+JSON.stringify(this.myList));
+            this.myList =[...this.myList,{item: event.target.dataset.item,
+                                          value:foundelement.value ,
+                                          parentObjName:event.target.dataset.parent}];
+            console.log('Inside Else If');
+            
+
+             console.log('MyList=== '+JSON.stringify(this.myList));
 
        }
 
-
         let parentArray = {
             parentName: event.target.dataset.parent,
-            parentVal: this.Fields.parentVal
+            parentVal:  this.Fields.parentVal,
         };
     }
+
+    handleClick(){
+        console.log('Hello');
+        console.log('Json=== '+JSON.stringify(this.myList));
+        console.log(typeof JSON.stringify(this.myList));
+
+        createRecords({listOfValue : JSON.stringify(this.myList)})
+        .then(result => {
+            this.returnMessage = result;
+            const evt = new ShowToastEvent({
+                title: 'Success',
+                message: 'Record Is Inserted',
+                variant: 'success',
+            });
+            this.dispatchEvent(evt);
+
+            console.log('Result=== '+result);
+        })
+        .catch(error => {
+            console.log('Error== '+error);
+            this.error = error;
+            const evt = new ShowToastEvent({
+                title: 'Error on data save',
+                message:  error.message.body,
+                variant: 'error',
+            });
+            this.dispatchEvent(evt);
+        });
+    }
+
+
 
 }

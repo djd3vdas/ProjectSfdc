@@ -64,4 +64,33 @@ public inherited sharing class DescribeObjectHelper {
            // System.debug(objectListMap);
             return objectListMap;
         }
+    
+		public class ItemClass{
+            public String item{get;set;}
+            public String value {get;set;}
+            public String parentObjName {get;set;}
+    	}
+        @AuraEnabled
+         public static Integer createRecords(String listOfValue){
+             Integer i=0;
+             system.debug('Hi=='+ listOfValue);
+             /* Deserialize from Array of Object to List of ItemClass Wrapper*/
+             List<ItemClass> lstItem = (List<ItemClass>) JSON.deserialize(listOfValue, List<ItemClass>.class);
+             System.debug('lstItem=' + lstItem);
+             List<Object_Sequence__c> addData= new List<Object_Sequence__c>();
+             for(ItemClass obj: lstItem){
+                 addData.add(new Object_Sequence__c(Child_Object_API_Name__c = obj.item,
+                                                   	Child_Object_Sequence_No__c = Integer.valueOf(obj.value),
+                                                   Parent_Object_API_Name__c = obj.parentObjName));
+                i++;                                                   
+             }
+             try{
+                insert addData;
+             }catch(DmlException e){
+                 System.debug('An unexpected error has occurred: ' + e.getMessage());
+             }
+             return i;
+         }
+   
+    
  }

@@ -10,3 +10,6 @@ declare module "@salesforce/apex/DescribeObjectHelper.retreieveRecords" {
 declare module "@salesforce/apex/DescribeObjectHelper.getChildObject" {
   export default function getChildObject(param: {objectListApiName: any}): Promise<any>;
 }
+declare module "@salesforce/apex/DescribeObjectHelper.createRecords" {
+  export default function createRecords(param: {listOfValue: any}): Promise<any>;
+}
