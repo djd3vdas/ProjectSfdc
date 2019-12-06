@@ -30,6 +30,13 @@
             label="Selected Fields" readonly>
         </lightning-textarea>
 
+        <lightning-textarea
+        name="querySelectedFields"
+        value={selectedQueryFieldsValue}
+        label="Selected Fields for Query"
+        onchange={queryCondition}>
+        </lightning-textarea>
+
         <lightning-button variant="brand" label="Retrieve Records"
                 title="Retrieve Records" onclick={handleClick}
                 class="slds-m-left_x-small">

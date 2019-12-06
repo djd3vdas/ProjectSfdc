@@ -14,7 +14,8 @@ let j=0;
 let args=[]; //holding arguments that is passed through event
 let columnFields;
 let itemValue; //holds each item with first letter in upper case
-
+var itemParentObj;
+var itemChildObj;
 
 export default class listOfChildObj extends LightningElement {
     @track returnMessage;
@@ -27,11 +28,12 @@ export default class listOfChildObj extends LightningElement {
     @track childSeqNum;
     @track arrayValue=[];
     childItems=[];
-    parentItems=[];
+    updateList =[{itemKey:'',itemParentKey:''}];
+
+    parentItems=[{parObj:'',parValue:''}];
      myList=[
                         { item : '', value : '', parentObjName:''}
                   ];
-   
     //retrieve data from databased
 
     @track mapOfListValues = [];
@@ -42,7 +44,14 @@ export default class listOfChildObj extends LightningElement {
         this.Fields = {
             parentVal: '',
             parentName: '',
-            childArray: [],
+           // childArray: [],
+
+        };
+        this.ChildSeq = {
+            childObjName: '',
+            ChildVal: '',
+            parentObjName: '',
+           // childArray: [],
 
         };
     }
@@ -91,64 +100,87 @@ export default class listOfChildObj extends LightningElement {
     handleParentSequence(event){
             this.Fields.parentVal = event.target.value;
             this.Fields.parentName = event.target.dataset.item;
+            var listToDelete =[this.Fields.parentName,''];
+            // var listToDelete = [{itemKey: foundelement.item,
+            //                     ItemParentKey:foundelement.parentObjName},
+            //                     {itemKey: '',
+            //                         ItemParentKey:''}];
+            var end = 0;
+            for ( j = 0; j < this.parentItems.length; j++) {
+                var obj = this.parentItems[j];
+
+                if (listToDelete.indexOf(obj.parObj) === -1) {
+                   // console.log('object in loop ='+j+'   ===== '+JSON.stringify(obj));
+                    this.parentItems[end++] = obj;
+                }
+            }
+            this.parentItems.length = end;
+            this.parentItems=[...this.parentItems,{parObj:this.Fields.parentName,
+                parValue:this.Fields.parentVal}];
+            console.log(JSON.stringify(this.parentItems));
+
 
     }
 
     handleChildSequence(event){
-
-       let foundelement = this.myList.find(ele => ele.item == event.target.dataset.item);
-       let foundParentelement = this.myList.find(ele => ele.parentObjName == event.target.dataset.parentObjName);
-       console.log('check:'+ JSON.stringify(foundelement));
-
-       //&& foundParentelement === undefined && foundParentelement!==''
-       if(foundelement === undefined  && foundelement !==''){
-            this.myList =[...this.myList,{item: event.target.dataset.item,
-                                          value:event.target.value,
-                                          parentObjName:event.target.dataset.parent
+        let foundelement =this.myList.find(ele => ele.item == event.target.dataset.item && ele.parentObjName == event.target.dataset.parent);
+        console.log(JSON.stringify(foundelement));
+        if (foundelement === undefined ){
+             var deleteNull =[''];
+             var lastPos = 0;
+             for (var n = 0; n < this.myList.length; n++) {
+                 var obj1 = this.myList[n];
+                 if (deleteNull.indexOf(obj1.item) === -1 ) {
+                     this.myList[lastPos++] = obj1;
+                 }
+             }
+             this.myList.length = lastPos;
+ 
+             this.myList =[...this.myList,{item: event.target.dataset.item,
+                                             value:event.target.value,
+                                             parentObjName:event.target.dataset.parent
                                           }];
+            console.log("Un==="+ JSON.stringify(this.myList));
+         }else if((foundelement !==undefined && foundelement.item === event.target.dataset.item) && 
+                    (foundelement.parentObjName == event.target.dataset.parent)){
+ 
+             console.log(event.target.dataset.item +'  ======= '+ event.target.dataset.parent);
 
+             for(var m=0;m<this.myList.length;m++){
 
-       }else if(foundelement !== undefined && this.myList.item !=='' && foundelement !==''
-                                           ){
+                 if((this.myList[m].item === event.target.dataset.item) && 
+                    (this.myList[m].parentObjName === event.target.dataset.parent)){
+                     this.myList[m].value = event.target.value;
+                     break;
 
-        var listToDelete = [foundelement.item,''];
+                 }
+                //  else if ((this.myList[m].item === event.target.dataset.item) && (this.myList[m].parentObjName !== event.target.dataset.parent)){
+                //             this.myList[m].value=event.target.value;
+                //             this.myList =[...this.myList];
+                //             console.log('Insert=== '+JSON.stringify(this.myList));
+                //             //break;
 
-        var end = 0;
-        for ( j = 0; j < this.myList.length; j++) {
-            var obj = this.myList[j];
-
-            if (listToDelete.indexOf(obj.item) === -1) {
-                this.myList[end++] = obj;
+                //     }
+                 }
+             }else if((foundelement !==undefined && foundelement.item === event.target.dataset.item) && 
+                        (foundelement.parentObjName !== event.target.dataset.parent)){
+                            this.myList =[...this.myList,{item: event.target.dataset.item,
+                                                    value:event.target.value,
+                                                    parentObjName:event.target.dataset.parent
+                                                    }];
             }
-        }
-        this.myList.length = end;
+         }
 
-            // console.log("After Remove== "+JSON.stringify(this.myList));
-            // console.log('Inside Else If');
-            foundelement.value= event.target.value;
-            console.log(foundelement.item + ' ===foundelement.value=== '+foundelement.value);
-            this.myList =[...this.myList,{item: event.target.dataset.item,
-                                          value:foundelement.value ,
-                                          parentObjName:event.target.dataset.parent}];
-            console.log('Inside Else If');
-            
 
-             console.log('MyList=== '+JSON.stringify(this.myList));
-
-       }
-
-        let parentArray = {
-            parentName: event.target.dataset.parent,
-            parentVal:  this.Fields.parentVal,
-        };
-    }
 
     handleClick(){
         console.log('Hello');
         console.log('Json=== '+JSON.stringify(this.myList));
         console.log(typeof JSON.stringify(this.myList));
 
-        createRecords({listOfValue : JSON.stringify(this.myList)})
+        let val=0;
+
+        createRecords({listOfValue : JSON.stringify(this.myList),listOfParentValue: JSON.stringify(this.parentItems)})
         .then(result => {
             this.returnMessage = result;
             const evt = new ShowToastEvent({

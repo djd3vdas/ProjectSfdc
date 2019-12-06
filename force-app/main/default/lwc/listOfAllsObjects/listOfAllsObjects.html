@@ -2,18 +2,21 @@
     <lightning-card>
 
         <br></br>
-        <p class="slds-p-horizontal_medium">List of Objects </p>
+        <p class="slds-p-horizontal_medium">List of Objects1 </p>
 
          <div style="height: 200px;">
             <lightning-datatable
                 key-field="id"
                 data={tableData}
                 onrowselection={handleRowAction}
+                sorted-by={sortBy} 
+                onsort={handleSortdata} 
+                sorted-direction={sortDirection} 
                 columns={columns}>
             </lightning-datatable>
         </div>
         <lightning-button variant="brand" label="Retrieve Child Objects"
-        title="Retrieve Child Objects" onclick={handleClick}
+        title="Retrieve Child Objects" onclick={handlesClick}
         class="slds-m-left_x-small">
     </lightning-button>
     <lightning-button variant="brand" label="Reset"

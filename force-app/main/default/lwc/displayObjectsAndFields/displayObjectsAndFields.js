@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 import { LightningElement, track, wire } from 'lwc';
 
-import retreieveObjects from '@salesforce/apex/DescribeObjectHelper.retreieveObjects';
+//import retreieveObjects from '@salesforce/apex/DescribeObjectHelper.retreieveObjects';
+import retreieveParentObjects from '@salesforce/apex/DescribeObjectHelper.retreieveParentObjects'
 import getListOfFields from '@salesforce/apex/DescribeObjectHelper.getListOfFields';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
@@ -33,18 +34,37 @@ export default class DisplayObjectsAndFields extends LightningElement {
 
     @track columns = columns;   //columns for List of fields datatable
     @track selectedFieldsValue=''; //fields selected in datatable
+    @track selectedQueryFieldsValue='';
     @track tableData;   //data for list of fields datatable
 
     //retrieve object information to be displayed in combo box and prepare an array
-    @wire(retreieveObjects)
+    // @wire(retreieveObjects)
+    // wiredObjects({ error, data }) {
+    //     if (data) {
+
+    //         for(i=0; i<data.length; i++) {
+    //             /*console.log('MasterLabel=' + data[i].MasterLabel
+    //                 + 'QualifiedApiName=' + data[i].QualifiedApiName);*/
+    //             this.items = [...this.items ,{value: data[i].QualifiedApiName,
+    //                                           label: data[i].MasterLabel}];
+    //         }
+    //         this.error = undefined;
+    //     } else if (error) {
+    //         this.error = error;
+    //         this.data = undefined;
+    //     }
+    // }
+
+    //retrieve object information to be displayed in combo box and prepare an array
+    @wire(retreieveParentObjects)
     wiredObjects({ error, data }) {
         if (data) {
 
             for(i=0; i<data.length; i++) {
                 /*console.log('MasterLabel=' + data[i].MasterLabel
                     + 'QualifiedApiName=' + data[i].QualifiedApiName);*/
-                this.items = [...this.items ,{value: data[i].QualifiedApiName,
-                                              label: data[i].MasterLabel}];
+                this.items = [...this.items ,{value: data[i].Parent_Object_API_Name__c,
+                                              label: data[i].Parent_Obj_Name__c}];
             }
             this.error = undefined;
         } else if (error) {
@@ -52,6 +72,7 @@ export default class DisplayObjectsAndFields extends LightningElement {
             this.data = undefined;
         }
     }
+
 
     //retrieve combo-box values as status options
     get statusOptions() {
@@ -99,6 +120,10 @@ export default class DisplayObjectsAndFields extends LightningElement {
 
     }
 
+    queryCondition(event){
+        this.selectedQueryFieldsValue =  event.target.value;
+    }
+
     //this method is fired based on row selection of List of fields datatable
     handleRowAction(event){
         const selectedRows = event.detail.selectedRows;
@@ -110,16 +135,17 @@ export default class DisplayObjectsAndFields extends LightningElement {
                                         + selectedRows[i].FieldAPIName;
             }
             else{
-                this.selectedFieldsValue = selectedRows[i].FieldAPIName;
+                this.selectedFieldsValue = selectedRows[i].FieldAPIName ;
             }
         }
+
     }
 
     //this method is fired when retrieve records button is clicked
     handleClick(){
         const valueParam = this.value;
         const selectedFieldsValueParam = this.selectedFieldsValue;
-
+        const selectedQueryCondition = this.selectedQueryFieldsValue;
         //show error if no rows have been selected
         if(selectedFieldsValueParam ===null || selectedFieldsValueParam===''){
             const evt = new ShowToastEvent({
@@ -132,10 +158,12 @@ export default class DisplayObjectsAndFields extends LightningElement {
         else {
             //propage event to next component
             const evtCustomEvent = new CustomEvent('retreive', {
-                detail: {valueParam, selectedFieldsValueParam}
+                detail: {valueParam, selectedFieldsValueParam, selectedQueryCondition}
                 });
             this.dispatchEvent(evtCustomEvent);
         }
+
+
     }
 
     //this method is fired when reset button is clicked.

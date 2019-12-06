@@ -1,5 +1,5 @@
 <template>
-     <lightning-card class="slds-p-horizontal_medium" title="Child Objects List">
+     <lightning-card class="slds-p-horizontal_medium" title="Which objects' records you want to archieve?">
 
         <lightning-layout-item padding="around-small">
             <c-list-of-alls-objects onretreive={retriveRecordHandler} 
@@ -38,29 +38,7 @@
                                     </td> 
                                 </tr>
                             </template>
-                 <!--
-                    <template for:each={mapOfListValues} for:item="keyValue">
-                        <tr key={keyValue.key}>
-                            <th scope="col">
-                                <div class="slds-truncate slds-form-element slds-form-element__control" key={keyValue.key} data-item={keyValue.key}>
-                                    <b>{keyValue.key}</b>
-                                    <lightning-input type="number" key={keyValue.key} data-id={keyValue.key} name={keyValue}
-                                                     value={keyValue.ParentSeqValue} onchange={ParentSeqNumChange}
-                                                     data-item={keyValue} >
-                                    </lightning-input>
-                                </div>
-                            </th>
-                            <template for:each={keyValue.value} for:item="value">
-                                <div class="slds-truncate slds-form-element slds-form-element__control" key={value}>
-                                        <b>{value} </b>
-                                        <lightning-input type="number" key={value} name={value} value={value.childSeqNum}
-                                                        data-item={value} data-id={value}
-                                                        onchange={ChildSeqNumChange}></lightning-input><br/> 
-                                </div>
-                            </template>
-                        </tr>
-                    </template> 
-                 -->  
+                
                 </tbody>
             </table>
         </template>

@@ -12,7 +12,8 @@ export default class RetrieveRecord extends LightningElement {
 
     @api objectName = ''; //holding objectName value which is passed from other component
     @api fieldAPINames = ''; //holds list of fields API Name which is passed from other component
-    
+    @api queryCondition ='';
+
     items=[];
     @track data=[];
     @track columns;
@@ -20,7 +21,8 @@ export default class RetrieveRecord extends LightningElement {
 
     //retrieve data from databased
     @wire(retreieveRecords,{objectName:'$objectName'
-                            ,fieldAPINames:'$fieldAPINames'})
+                            ,fieldAPINames:'$fieldAPINames',
+                            queryableData: '$queryCondition'})
     wiredObjects({ error, data }) {
         if (data) {
             console.log('data in string='+ JSON.stringify(data));
@@ -35,13 +37,14 @@ export default class RetrieveRecord extends LightningElement {
     //due to event propagation this method is called
     retriveRecordHandler(event){
         console.log('retriveRecordHandler is fired');
-        
+
         args = JSON.parse(JSON.stringify(event.detail));
         //{"valueParam":"Account","selectedFieldsValueParam":"id,name,type"}
-        
+
         this.objectName = args.valueParam;
         this.fieldAPINames = args.selectedFieldsValueParam;
-        
+        this.queryCondition = args.selectedQueryCondition;
+
         console.log('this.objectName='+ this.objectName);
         console.log('this.fieldAPINames='+ this.fieldAPINames);
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 import { LightningElement, track, wire } from 'lwc';
 
@@ -6,10 +7,13 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 
 let i=0;
+let objStr;
 //define data table columns
 const columns = [
     { label: 'Object Label', fieldName: 'ObjectLabel' },
     { label: 'Object API Name', fieldName: 'ObjectAPIName' },
+    { label: 'Record Count', fieldName: 'recordCount',sortable: 'true' },
+    { label: 'Size(KB)', fieldName: 'size' ,sortable: 'true' }, 
 ];
 export default class listOfAllsObjects extends LightningElement {
 
@@ -24,7 +28,8 @@ export default class listOfAllsObjects extends LightningElement {
          { label: 'info', value: 'info' },
      ];
     @track objectItems = [];    //this holds the array for records with table data
-
+    @track sortBy;
+    @track sortDirection;
     @track columns = columns;   //columns for List of Objects datatable
     @track selectedFieldsValue='';  //Objects selected in datatable
     @track tableData;           //data for list of Objects datatable
@@ -32,21 +37,66 @@ export default class listOfAllsObjects extends LightningElement {
     @wire(retreieveObjects)
     wiredObjects({ error, data }) {
         if (data) {
-
-            for(i=0; i<data.length; i++) {
+            //console.log('check:'+data);
+            objStr = JSON.parse(data);
+            for(i=0; i<objStr.length; i++) {
+                this.objectItems = [ {ObjectLabel: objStr[i].ObjectLabel,
+                                    ObjectAPIName: objStr[i].ObjectAPIName, 
+                                        recordCount: objStr[i].recordCount, 
+                                        size: objStr[i].size},
+                                    ...this.objectItems];   
                 /*console.log('MasterLabel=' + data[i].MasterLabel
                     + 'QualifiedApiName=' + data[i].QualifiedApiName);*/
                 /*this.items = [...this.items ,{value: data[i].QualifiedApiName,
                                               label: data[i].MasterLabel}];*/
-                this.objectItems = [
-                {ObjectLabel: data[i].MasterLabel, ObjectAPIName: data[i].QualifiedApiName},...this.objectItems];
+               /*  this.objectItems = [
+                {ObjectLabel: data[i].MasterLabel, ObjectAPIName: data[i].QualifiedApiName},...this.objectItems];*/
+               // console.log('data:'+JSON.stringify(this.objectItems));
         }
+        console.log('data:'+this.objectItems);
             this.tableData = this.objectItems;
             this.error = undefined;
         } else if (error) {
             this.error = error;
             this.data = undefined;
         }
+    }
+
+    handleSortdata(event) {
+        // field name
+        this.sortBy = event.detail.fieldName;
+
+        // sort direction
+        this.sortDirection = event.detail.sortDirection;
+
+        // calling sortdata function to sort the data based on direction and selected field
+        this.sortData(event.detail.fieldName, event.detail.sortDirection);
+    }
+
+    sortData(fieldname, direction) {
+        // serialize the data before calling sort function
+        let parseData = JSON.parse(JSON.stringify(this.tableData));
+
+        // Return the value stored in the field
+        let keyValue = (a) => {
+            return Number(a[fieldname]);
+        };
+
+        // cheking reverse direction 
+        let isReverse = direction === 'asc' ? 1: -1;
+
+        // sorting data 
+        parseData.sort((x, y) => {
+            x = keyValue(x) ? keyValue(x) : ''; // handling null values
+            y = keyValue(y) ? keyValue(y) : '';
+
+            // sorting values based on direction
+            return isReverse * ((x > y) - (y > x));
+        });
+
+        // set the sorted data to data table data
+        this.tableData = parseData;
+
     }
 
     //this method is fired based on row selection of List of Objects datatable
@@ -67,7 +117,7 @@ export default class listOfAllsObjects extends LightningElement {
     }
 
     //this method is fired when retrieve records button is clicked
-    handleClick(){
+    handlesClick(){
         console.log('Hi');
         const selectedFieldsValueParam = this.selectedFieldsValue;
         console.log('selectedFieldsValueParam=='+this.selectedFieldsValue);

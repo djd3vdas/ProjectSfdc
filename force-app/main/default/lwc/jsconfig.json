@@ -26,6 +26,9 @@
             "c/listOfObjects": [
                 "listOfObjects/listOfObjects.js"
             ],
+            "c/retrieveParentRecord": [
+                "retrieveParentRecord/retrieveParentRecord.js"
+            ],
             "c/retrieveRecord": [
                 "retrieveRecord/retrieveRecord.js"
             ]

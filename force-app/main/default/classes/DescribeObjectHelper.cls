@@ -9,6 +9,14 @@ public inherited sharing class DescribeObjectHelper {
                     WHERE IsApexTriggerable = true
                     ORDER BY MasterLabel desc];
     }
+    @AuraEnabled (cacheable=true)
+    public static List<Object_Archive__c> retreieveParentObjects(){
+        return [SELECT Id, Obj_Seq_Id__c,
+                	  Parent_Object_API_Name__c,
+                	  Parent_Obj_Name__c
+                    FROM Object_Archive__c
+                    ORDER BY Obj_Seq_Id__c desc];
+    }
 
     //Retrieve field details based on Object API Name
     @AuraEnabled (cacheable=true)
@@ -30,13 +38,20 @@ public inherited sharing class DescribeObjectHelper {
 
     //Retrieve records based on selected fields and object.
     @AuraEnabled (cacheable=true)
-    public static List<SObject> retreieveRecords(String objectName, String fieldAPINames){
+    public static List<SObject> retreieveRecords(String objectName, String fieldAPINames, String queryableData){  
+        
+        
         String strQuery = 'SELECT ' + String.escapeSingleQuotes(fieldAPINames) 
                         + ' FROM ' 
                         + String.escapeSingleQuotes(objectName) 
-                        + ' LIMIT 20';
+                        +' '
+                        +(queryableData);
+        
+        System.debug('Query== '+strQuery);
+        
         return database.query(strQuery);
     }
+    
 
    @AuraEnabled(cacheable=true)
     public static Map<String,List<String>> getChildObject(String objectListApiName){
@@ -70,27 +85,44 @@ public inherited sharing class DescribeObjectHelper {
             public String value {get;set;}
             public String parentObjName {get;set;}
     	}
+        public class ParentItemClass{
+            public String parObj{get;set;}
+            public String parValue {get;set;}
+            
+    	}
+        
+
         @AuraEnabled
-         public static Integer createRecords(String listOfValue){
+         public static String createRecords(String listOfValue, String listOfParentValue){
              Integer i=0;
              system.debug('Hi=='+ listOfValue);
+             system.debug('Parent Value=='+ listOfParentValue);
              /* Deserialize from Array of Object to List of ItemClass Wrapper*/
              List<ItemClass> lstItem = (List<ItemClass>) JSON.deserialize(listOfValue, List<ItemClass>.class);
-             System.debug('lstItem=' + lstItem);
+//             List<ItemClass> listSobjNew = new List<ItemClass>(new Set<ItemClass>(lstItem));
+             List<ParentItemClass> lstParentItem = (List<ParentItemClass>) JSON.deserialize(listOfParentValue, List<ParentItemClass>.class);
+             
              List<Object_Sequence__c> addData= new List<Object_Sequence__c>();
+             List<Object_Archive__c> addParentData= new List<Object_Archive__c>();
              for(ItemClass obj: lstItem){
-                 addData.add(new Object_Sequence__c(Child_Object_API_Name__c = obj.item,
-                                                   	Child_Object_Sequence_No__c = Integer.valueOf(obj.value),
-                                                   Parent_Object_API_Name__c = obj.parentObjName));
-                i++;                                                   
+                     addData.add(new Object_Sequence__c(Child_Object_API_Name__c = obj.item,
+                                                        Child_Object_Sequence_No__c = Integer.valueOf(obj.value),
+                                                       Parent_Object_API_Name__c = obj.parentObjName));
+                i++;    
+              } 
+               List<Object_Sequence__c> listSobjNew = new List<Object_Sequence__c>(new Set<Object_Sequence__c>(addData));
+
+             for(ParentItemClass objPar: lstParentItem){
+                 addParentData.add(new Object_Archive__c(Parent_Object_API_Name__c = objPar.parObj,
+                                                   	    Obj_Seq_Id__c = Integer.valueOf(objPar.parValue),
+                                                        Parent_Obj_Name__c = objPar.parObj)); 
              }
              try{
-                insert addData;
+                insert listSobjNew;
+                insert addParentData;
              }catch(DmlException e){
                  System.debug('An unexpected error has occurred: ' + e.getMessage());
              }
-             return i;
+             return 'Success';
          }
-   
-    
  }
