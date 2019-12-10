@@ -18,7 +18,7 @@ export default class RetrieveRecord extends LightningElement {
     @track data=[];
     @track columns;
     @track isRecordsVisible; //decision to make if this dynamic table to be shown.
-
+    @track isVisibleComp;
     //retrieve data from databased
     @wire(retreieveRecords,{objectName:'$objectName'
                             ,fieldAPINames:'$fieldAPINames',
@@ -46,9 +46,7 @@ export default class RetrieveRecord extends LightningElement {
         this.objectName = args.valueParam;
         this.fieldAPINames = args.selectedFieldsValueParam;
         this.queryCondition = args.selectedQueryCondition;
-
-        console.log('this.objectName='+ this.objectName);
-        console.log('this.fieldAPINames='+ this.fieldAPINames);
+        //console.log('this.fieldAPINames='+ this.fieldAPINames);
 
         //create columns from fieldAPINames ("id,name,type")
         columnFields = args.selectedFieldsValueParam.split(',');
@@ -62,10 +60,13 @@ export default class RetrieveRecord extends LightningElement {
             itemValue = columnFields[i].charAt(0).toUpperCase()+columnFields[i].slice(1);
             console.log('columnFields=' + itemValue);
             this.items = [...this.items ,{label: itemValue, 
-                                        fieldName: itemValue}];                                   
+                                        fieldName: itemValue}];
         } 
         this.columns = this.items;
         this.isRecordsVisible = true;
+        this.showNewComp =args.myCompVisible;
+
+        console.log('this.showNewComp='+ this.showNewComp);
     }
 
     //due to event propagation this method is called for reseting datatable
@@ -73,16 +74,22 @@ export default class RetrieveRecord extends LightningElement {
         this.isRecordsVisible = false;
         this.columns = [];
         this.data = [];
-        this.showNewCom = false;
+        this.showNewComp=this.isVisibleComp;
+        console.log('Reset hand==='+this.isVisibleComp);
+        
+
     }
     retrieveHandler(event){
         args = JSON.parse(JSON.stringify(event.detail));
         this.showNewComp= args.myComp;
-        console.log(this.showNewComp);
-        console.log(args.showComp);
+        console.log('retreive Hnd=== '+ this.showNewComp);
+        //console.log(args.showComp);
         
     }
     resetCompHandler(){
-        this.showNewCom = false;
+        this.isRecordsVisible = false;
+        this.columns = [];
+        this.data = [];
+        this.showNewComp = false;
     }
 }

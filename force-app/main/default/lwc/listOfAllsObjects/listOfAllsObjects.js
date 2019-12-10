@@ -34,7 +34,7 @@ export default class listOfAllsObjects extends LightningElement {
     @track columns = columns;   //columns for List of Objects datatable
     @track selectedFieldsValue='';  //Objects selected in datatable
     @track tableData;  //data for list of Objects datatable
-    @track showScreen=false;        
+    @track showScreen=false;
 
     @wire(retreieveObjects)
     wiredObjects({ error, data }) {
@@ -46,14 +46,7 @@ export default class listOfAllsObjects extends LightningElement {
                                     ObjectAPIName: objStr[i].ObjectAPIName, 
                                         recordCount: objStr[i].recordCount, 
                                         size: objStr[i].size},
-                                    ...this.objectItems];   
-                /*console.log('MasterLabel=' + data[i].MasterLabel
-                    + 'QualifiedApiName=' + data[i].QualifiedApiName);*/
-                /*this.items = [...this.items ,{value: data[i].QualifiedApiName,
-                                              label: data[i].MasterLabel}];*/
-               /*  this.objectItems = [
-                {ObjectLabel: data[i].MasterLabel, ObjectAPIName: data[i].QualifiedApiName},...this.objectItems];*/
-               // console.log('data:'+JSON.stringify(this.objectItems));
+                                    ...this.objectItems];
         }
         // console.log('data:'+this.objectItems);
             this.tableData = this.objectItems;

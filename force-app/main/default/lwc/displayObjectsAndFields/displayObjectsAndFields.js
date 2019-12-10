@@ -37,7 +37,7 @@ export default class DisplayObjectsAndFields extends LightningElement {
     @track selectedFieldsValue=''; //fields selected in datatable
     @track selectedQueryFieldsValue='';
     @track tableData;   //data for list of fields datatable
-
+    @track showNewComp;
     //retrieve object information to be displayed in combo box and prepare an array
     // @wire(retreieveObjects)
     // wiredObjects({ error, data }) {
@@ -171,6 +171,7 @@ export default class DisplayObjectsAndFields extends LightningElement {
                             variant: 'success',
                         }),
                     );
+                   
                 }
             })
             .catch(error => {
@@ -187,8 +188,13 @@ export default class DisplayObjectsAndFields extends LightningElement {
             });
             /*End of Create Record*/
             //propage event to next component
+            this.showNewComp=false;
+            const myCompVisible= this.showNewComp;
+            this.value = '';
+            this.tableData = [];
+            console.log('Onclick DF==='+myCompVisible);
             const evtCustomEvent = new CustomEvent('retreive', {
-                detail: {valueParam, selectedFieldsValueParam, selectedQueryCondition}
+                detail: {valueParam, selectedFieldsValueParam, selectedQueryCondition,myCompVisible}
                 });
             this.dispatchEvent(evtCustomEvent);
         }
@@ -201,6 +207,8 @@ export default class DisplayObjectsAndFields extends LightningElement {
     handleResetClick(){
         this.value = '';
         this.tableData = [];
+        this.showNewComp=false;
+        console.log('Reset DF==='+this.showNewComp);
         const evtCustomEvent = new CustomEvent('reset');
         this.dispatchEvent(evtCustomEvent);
     }
