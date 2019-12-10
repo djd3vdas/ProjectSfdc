@@ -13,7 +13,7 @@ export default class RetrieveRecord extends LightningElement {
     @api objectName = ''; //holding objectName value which is passed from other component
     @api fieldAPINames = ''; //holds list of fields API Name which is passed from other component
     @api queryCondition ='';
-    @track showNewComp;
+
     items=[];
     @track data=[];
     @track columns;
@@ -33,8 +33,6 @@ export default class RetrieveRecord extends LightningElement {
             this.data = undefined;
         }
     }
-
-   
 
     //due to event propagation this method is called
     retriveRecordHandler(event){
@@ -73,16 +71,5 @@ export default class RetrieveRecord extends LightningElement {
         this.isRecordsVisible = false;
         this.columns = [];
         this.data = [];
-        this.showNewCom = false;
-    }
-    retrieveHandler(event){
-        args = JSON.parse(JSON.stringify(event.detail));
-        this.showNewComp= args.myComp;
-        console.log(this.showNewComp);
-        console.log(args.showComp);
-        
-    }
-    resetCompHandler(){
-        this.showNewCom = false;
     }
 }

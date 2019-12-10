@@ -2,8 +2,14 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
+            "c/archivalSummaryScreen": [
+                "archivalSummaryScreen/archivalSummaryScreen.js"
+            ],
             "c/createRelatedRecord": [
                 "createRelatedRecord/createRelatedRecord.js"
+            ],
+            "c/describedCombinedObjects": [
+                "describedCombinedObjects/describedCombinedObjects.js"
             ],
             "c/displayContact": [
                 "displayContact/displayContact.js"
@@ -16,6 +22,9 @@
             ],
             "c/helloWorld": [
                 "helloWorld/helloWorld.js"
+            ],
+            "c/imperativEx": [
+                "imperativEx/imperativEx.js"
             ],
             "c/listOfAllsObjects": [
                 "listOfAllsObjects/listOfAllsObjects.js"

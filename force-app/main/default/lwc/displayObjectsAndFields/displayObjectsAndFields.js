@@ -5,6 +5,7 @@ import { LightningElement, track, wire } from 'lwc';
 import retreieveParentObjects from '@salesforce/apex/DescribeObjectHelper.retreieveParentObjects'
 import getListOfFields from '@salesforce/apex/DescribeObjectHelper.getListOfFields';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import createBORecords from '@salesforce/apex/DescribeObjectHelper.createBORecords';
 
 /** The delay used when debouncing event handlers before invoking Apex. */
 const DELAY = 300;
@@ -59,12 +60,12 @@ export default class DisplayObjectsAndFields extends LightningElement {
     @wire(retreieveParentObjects)
     wiredObjects({ error, data }) {
         if (data) {
-
+            console.log('Data'+JSON.stringify(data));
             for(i=0; i<data.length; i++) {
                 /*console.log('MasterLabel=' + data[i].MasterLabel
                     + 'QualifiedApiName=' + data[i].QualifiedApiName);*/
-                this.items = [...this.items ,{value: data[i].Parent_Object_API_Name__c,
-                                              label: data[i].Parent_Obj_Name__c}];
+                this.items = [...this.items ,{value: data[i],
+                                              label: data[i]}];
             }
             this.error = undefined;
         } else if (error) {
@@ -146,6 +147,7 @@ export default class DisplayObjectsAndFields extends LightningElement {
         const valueParam = this.value;
         const selectedFieldsValueParam = this.selectedFieldsValue;
         const selectedQueryCondition = this.selectedQueryFieldsValue;
+       
         //show error if no rows have been selected
         if(selectedFieldsValueParam ===null || selectedFieldsValueParam===''){
             const evt = new ShowToastEvent({
@@ -156,12 +158,41 @@ export default class DisplayObjectsAndFields extends LightningElement {
             this.dispatchEvent(evt);
         }
         else {
+            /* Create Record */
+            createBORecords({ objName : valueParam , listOfFields: selectedFieldsValueParam , queryCondition:selectedQueryCondition})
+            .then(result => {
+                this.message = result;
+                this.error = undefined;
+                if(this.message !== undefined) {
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Success',
+                            message: ' Created',
+                            variant: 'success',
+                        }),
+                    );
+                }
+            })
+            .catch(error => {
+                this.message = undefined;
+                this.error = error;
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Error creating record',
+                        message: error.body.message,
+                        variant: 'error',
+                    }),
+                );
+                console.log("error", JSON.stringify(this.error));
+            });
+            /*End of Create Record*/
             //propage event to next component
             const evtCustomEvent = new CustomEvent('retreive', {
                 detail: {valueParam, selectedFieldsValueParam, selectedQueryCondition}
                 });
             this.dispatchEvent(evtCustomEvent);
         }
+
 
 
     }

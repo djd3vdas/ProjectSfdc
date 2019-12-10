@@ -25,11 +25,10 @@ export default class listOfChildObj extends LightningElement {
     @track data=[];
     @track columns;
     @track isRecordsVisible; //decision to make if this dynamic table to be shown.
+    @track compShow=false;
     @track childSeqNum;
     @track arrayValue=[];
     childItems=[];
-    updateList =[{itemKey:'',itemParentKey:''}];
-
     parentItems=[{parObj:'',parValue:''}];
      myList=[
                         { item : '', value : '', parentObjName:''}
@@ -75,36 +74,18 @@ export default class listOfChildObj extends LightningElement {
     }
 
     retriveRecordHandler(event){
-        console.log('retriveRecordHandler is fired');
+        // console.log('retriveRecordHandler is fired');
         args = JSON.parse(JSON.stringify(event.detail));
 
         this.objectListApiName = args.selectedFieldsValueParam;
-        console.log('this.objectName='+ this.objectListApiName);
-
-        columnFields = args.selectedFieldsValueParam.split(',');
-        this.items='';
-
-       //create columns for dynamic data display. Here all fields must be converted to initial letter as upper case
-        //e.g id,name,type to transformed to Id, Name, Type
-        for(i=0; i<columnFields.length; i++) {
-            //make first character as upper case
-            itemValue = columnFields[i].charAt(0).toUpperCase()+columnFields[i].slice(1);
-            console.log('columnFields=' + itemValue);
-            this.items = [...this.items ,{label: itemValue,
-                                        fieldName: itemValue}];
-        }
-        this.columns = this.items;
-        this.isRecordsVisible = true;
+        
+        this.isRecordsVisible = args.showComp;
     }
 
     handleParentSequence(event){
             this.Fields.parentVal = event.target.value;
             this.Fields.parentName = event.target.dataset.item;
             var listToDelete =[this.Fields.parentName,''];
-            // var listToDelete = [{itemKey: foundelement.item,
-            //                     ItemParentKey:foundelement.parentObjName},
-            //                     {itemKey: '',
-            //                         ItemParentKey:''}];
             var end = 0;
             for ( j = 0; j < this.parentItems.length; j++) {
                 var obj = this.parentItems[j];
@@ -117,14 +98,14 @@ export default class listOfChildObj extends LightningElement {
             this.parentItems.length = end;
             this.parentItems=[...this.parentItems,{parObj:this.Fields.parentName,
                 parValue:this.Fields.parentVal}];
-            console.log(JSON.stringify(this.parentItems));
+           // console.log(JSON.stringify(this.parentItems));
 
 
     }
 
     handleChildSequence(event){
         let foundelement =this.myList.find(ele => ele.item == event.target.dataset.item && ele.parentObjName == event.target.dataset.parent);
-        console.log(JSON.stringify(foundelement));
+       // console.log(JSON.stringify(foundelement));
         if (foundelement === undefined ){
              var deleteNull =[''];
              var lastPos = 0;
@@ -138,13 +119,13 @@ export default class listOfChildObj extends LightningElement {
  
              this.myList =[...this.myList,{item: event.target.dataset.item,
                                              value:event.target.value,
-                                             parentObjName:event.target.dataset.parent
+                                             parentObjName:event.target.dataset.parent,
                                           }];
-            console.log("Un==="+ JSON.stringify(this.myList));
+           // console.log("Un==="+ JSON.stringify(this.myList));
          }else if((foundelement !==undefined && foundelement.item === event.target.dataset.item) && 
                     (foundelement.parentObjName == event.target.dataset.parent)){
  
-             console.log(event.target.dataset.item +'  ======= '+ event.target.dataset.parent);
+            // console.log(event.target.dataset.item +'  ======= '+ event.target.dataset.parent);
 
              for(var m=0;m<this.myList.length;m++){
 
@@ -154,13 +135,6 @@ export default class listOfChildObj extends LightningElement {
                      break;
 
                  }
-                //  else if ((this.myList[m].item === event.target.dataset.item) && (this.myList[m].parentObjName !== event.target.dataset.parent)){
-                //             this.myList[m].value=event.target.value;
-                //             this.myList =[...this.myList];
-                //             console.log('Insert=== '+JSON.stringify(this.myList));
-                //             //break;
-
-                //     }
                  }
              }else if((foundelement !==undefined && foundelement.item === event.target.dataset.item) && 
                         (foundelement.parentObjName !== event.target.dataset.parent)){
@@ -174,20 +148,23 @@ export default class listOfChildObj extends LightningElement {
 
 
     handleClick(){
-        console.log('Hello');
-        console.log('Json=== '+JSON.stringify(this.myList));
-        console.log(typeof JSON.stringify(this.myList));
-
-        let val=0;
-
+        
         createRecords({listOfValue : JSON.stringify(this.myList),listOfParentValue: JSON.stringify(this.parentItems)})
         .then(result => {
             this.returnMessage = result;
             const evt = new ShowToastEvent({
                 title: 'Success',
-                message: 'Record Is Inserted',
+                message: 'Records are Inserted',
                 variant: 'success',
             });
+            this.compShow=true;
+            const myComp=this.compShow;
+            this.isRecordsVisible =false;
+            console.log('Hiii===== '+this.compShow);
+            const evtCustomEvent = new CustomEvent('retreive', {
+                detail: {myComp}
+                });
+            this.dispatchEvent(evtCustomEvent);
             this.dispatchEvent(evt);
 
             console.log('Result=== '+result);
@@ -202,6 +179,30 @@ export default class listOfChildObj extends LightningElement {
             });
             this.dispatchEvent(evt);
         });
+
+        if(this.returnMessage == 'Success'){
+            const showNewComp= this.compShow;
+            this.isRecordsVisible =false;
+            console.log('Hiii===== '+showNewComp);
+            const evtCustomEvent = new CustomEvent('retreive', {
+                detail: {showNewComp}
+                });
+            this.dispatchEvent(evtCustomEvent);
+        }
+        
+    }
+    handleResetClick(){
+        this.selectedFieldsValue='';
+        this.isRecordsVisible =false;
+        const evtCustomEvent = new CustomEvent('reset');
+        this.dispatchEvent(evtCustomEvent);
+    }
+    resetHandler(){
+        //console.log(this.selectedFieldsValue);
+        this.mapOfListValues=[];
+        this.isRecordsVisible = false;
+        this.parentItems=[];
+        this.selectedFieldsValue='';
     }
 
 

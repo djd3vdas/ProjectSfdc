@@ -16,3 +16,12 @@ declare module "@salesforce/apex/DescribeObjectHelper.getChildObject" {
 declare module "@salesforce/apex/DescribeObjectHelper.createRecords" {
   export default function createRecords(param: {listOfValue: any, listOfParentValue: any}): Promise<any>;
 }
+declare module "@salesforce/apex/DescribeObjectHelper.createBORecords" {
+  export default function createBORecords(param: {objName: any, listOfFields: any, queryCondition: any}): Promise<any>;
+}
+declare module "@salesforce/apex/DescribeObjectHelper.archivalSummaryMethod" {
+  export default function archivalSummaryMethod(): Promise<any>;
+}
+declare module "@salesforce/apex/DescribeObjectHelper.archivalSummaryScreenMethod" {
+  export default function archivalSummaryScreenMethod(): Promise<any>;
+}

@@ -1,0 +1,27 @@
+<template>
+    <div class="c-container">
+        <lightning-layout>
+            <lightning-layout-item padding="around-small">
+                <c-list-of-child-obj onretreive={retriveRecordHandler} 
+                                                onreset={resetHandler}>
+                </c-list-of-child-obj>
+            </lightning-layout-item>
+            <template  if:true={isRecordsVisible}>
+                <div class="slds-card">
+                    <lightning-layout-item padding="around-small">
+                        <div class="slds-card">
+                            <p class="slds-p-horizontal_medium">{objectName} Records based on field selection </p>
+                            <br></br>
+                                <lightning-datatable
+                                    key-field="id"
+                                    data={data}
+                                    columns={columns}
+                                    min-column-width=200>
+                                </lightning-datatable>
+                        </div>
+                    </lightning-layout-item>
+                </div>
+            </template>
+        </lightning-layout>
+    </div>
+</template>

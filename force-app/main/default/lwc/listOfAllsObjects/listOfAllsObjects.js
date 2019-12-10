@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
-import { LightningElement, track, wire } from 'lwc';
+import { LightningElement, track, wire, api } from 'lwc';
 
 import retreieveObjects from '@salesforce/apex/DescribeObjectHelper.retreieveObjects';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
@@ -8,6 +8,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 let i=0;
 let objStr;
+//let selectedRows;
 //define data table columns
 const columns = [
     { label: 'Object Label', fieldName: 'ObjectLabel' },
@@ -32,7 +33,8 @@ export default class listOfAllsObjects extends LightningElement {
     @track sortDirection;
     @track columns = columns;   //columns for List of Objects datatable
     @track selectedFieldsValue='';  //Objects selected in datatable
-    @track tableData;           //data for list of Objects datatable
+    @track tableData;  //data for list of Objects datatable
+    @track showScreen=false;        
 
     @wire(retreieveObjects)
     wiredObjects({ error, data }) {
@@ -53,8 +55,10 @@ export default class listOfAllsObjects extends LightningElement {
                 {ObjectLabel: data[i].MasterLabel, ObjectAPIName: data[i].QualifiedApiName},...this.objectItems];*/
                // console.log('data:'+JSON.stringify(this.objectItems));
         }
-        console.log('data:'+this.objectItems);
+        // console.log('data:'+this.objectItems);
             this.tableData = this.objectItems;
+            this.showScreen=true;
+            console.log(this.showScreen);
             this.error = undefined;
         } else if (error) {
             this.error = error;
@@ -102,6 +106,7 @@ export default class listOfAllsObjects extends LightningElement {
     //this method is fired based on row selection of List of Objects datatable
     handleRowAction(event){
         const selectedRows = event.detail.selectedRows;
+       // selectedRows = event.detail.selectedRows;
         this.selectedFieldsValue = '';
         // Display that fieldName of the selected rows in a comma delimited way
         for ( i = 0; i < selectedRows.length; i++){
@@ -118,10 +123,12 @@ export default class listOfAllsObjects extends LightningElement {
 
     //this method is fired when retrieve records button is clicked
     handlesClick(){
-        console.log('Hi');
+        
         const selectedFieldsValueParam = this.selectedFieldsValue;
-        console.log('selectedFieldsValueParam=='+this.selectedFieldsValue);
-        console.log('selectedFieldsValueParam= '+selectedFieldsValueParam);
+        const showComp = this.showScreen;
+        //console.log('Hi' +showComp);
+        // console.log('selectedFieldsValueParam=='+this.selectedFieldsValue);
+        // console.log('selectedFieldsValueParam= '+selectedFieldsValueParam);
 
         //show error if no rows have been selected
         if(selectedFieldsValueParam ===null || selectedFieldsValueParam===''){
@@ -135,16 +142,13 @@ export default class listOfAllsObjects extends LightningElement {
         else {
             //propage event to next component
             const evtCustomEvent = new CustomEvent('retreive', {
-                detail: { selectedFieldsValueParam}
+                detail: { selectedFieldsValueParam,showComp}
                 });
             this.dispatchEvent(evtCustomEvent);
         }
     }
-
+    
     handleResetClick(){
-        this.selectedFieldsValue = '';
-        this.tableData =[];
-        this.tableData = this.objectItems;
         const evtCustomEvent = new CustomEvent('reset');
         this.dispatchEvent(evtCustomEvent);
     }
