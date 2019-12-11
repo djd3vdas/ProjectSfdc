@@ -38,6 +38,7 @@ export default class DisplayObjectsAndFields extends LightningElement {
     @track selectedQueryFieldsValue='';
     @track tableData;   //data for list of fields datatable
     @track showNewComp;
+
     //retrieve object information to be displayed in combo box and prepare an array
     // @wire(retreieveObjects)
     // wiredObjects({ error, data }) {
@@ -164,14 +165,24 @@ export default class DisplayObjectsAndFields extends LightningElement {
                 this.message = result;
                 this.error = undefined;
                 if(this.message !== undefined) {
+                    this.showNewComp=false;
                     this.dispatchEvent(
                         new ShowToastEvent({
                             title: 'Success',
-                            message: ' Created',
+                            message: 'Big Objects Records are Created',
                             variant: 'success',
                         }),
                     );
-                   
+                    //propage event to next component
+                    const myCompVisible= this.showNewComp;
+                    this.value = '';
+                    this.tableData = [];
+                    console.log('Onclick DF==='+myCompVisible);
+                    const evtCustomEvent = new CustomEvent('retreive',{
+                        detail: {valueParam, selectedFieldsValueParam, selectedQueryCondition,myCompVisible}
+                        });
+                    this.dispatchEvent(evtCustomEvent);
+                    
                 }
             })
             .catch(error => {
@@ -187,16 +198,7 @@ export default class DisplayObjectsAndFields extends LightningElement {
                 console.log("error", JSON.stringify(this.error));
             });
             /*End of Create Record*/
-            //propage event to next component
-            this.showNewComp=false;
-            const myCompVisible= this.showNewComp;
-            this.value = '';
-            this.tableData = [];
-            console.log('Onclick DF==='+myCompVisible);
-            const evtCustomEvent = new CustomEvent('retreive', {
-                detail: {valueParam, selectedFieldsValueParam, selectedQueryCondition,myCompVisible}
-                });
-            this.dispatchEvent(evtCustomEvent);
+            
         }
 
 

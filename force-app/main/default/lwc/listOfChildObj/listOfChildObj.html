@@ -1,64 +1,72 @@
 <template>
-        
+        <template if:true={firstCompHide}>
            <lightning-layout-item padding="around-small">
                <c-list-of-alls-objects onretreive={retriveRecordHandler} 
                                                onreset={resetHandler}>
                </c-list-of-alls-objects>
            </lightning-layout-item>
+        </template>
            <template if:true={isRecordsVisible}>
-           <template if:true={mapOfListValues}>
-               <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
-                   <thead>
-                       <tr class="slds-text-title_caps">
-                           <th scope="col">
-                               <div title="Key">Object Name</div>
-                           </th>
-                           <th scope="col">
-                               <div title="Value">Child Object Name</div>
-                           </th>
-                       </tr>
-                   </thead>
-                   <tbody>
-                           <template for:each={mapOfListValues} for:item="keyValue">
-                                   <tr key={keyValue.key} >
-                                       <td>
+            <template if:true={mapOfListValues}>
+            <lightning-card title="Enter Parent and Child Objects' Sequence " icon-name="custom:custom13">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th scope="col">
+                                <div title="Key">Parent Object Name</div>
+                            </th>
+                            <th scope="col">
+                                <div title="Value">Child Object Name</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <template for:each={mapOfListValues} for:item="keyValue">
+                                    <tr key={keyValue.key} >
+                                        <td>
                                             <lightning-layout multiple-rows vertical-align="center" class="x-large">
-                                                    <lightning-layout-item flexibility="auto" padding="around-small">
-                                           <div key={keyValue.key} data-item={keyValue.key} class="custom-box slds-box slds-p-around_medium slds-text-align_center">
-                                               {keyValue.key}
-                                           <lightning-input key={keyValue.key} data-id={keyValue.key} data-item={keyValue.key}
-                                           onchange={handleParentSequence} ></lightning-input></div>
-                                        </lightning-layout-item>
-                                    </lightning-layout>
-                                       </td>
-                                       <td>
+                                                    <div key={keyValue.key} data-item={keyValue.key} class=" slds-grow slds-cell-wrap custom-box slds-box slds-p-around_medium slds-text-align_center">
+                                                        <lightning-layout-item flexibility="auto" padding="around-small">  
+                                                            <b>{keyValue.key}</b> 
+                                                        </lightning-layout-item>
+
+                                                        <lightning-layout-item flexibility="auto" padding="around-small" size="2">
+                                                            <lightning-input key={keyValue.key} data-id={keyValue.key} data-item={keyValue.key}
+                                                            onchange={handleParentSequence} ></lightning-input>
+                                                        </lightning-layout-item>
+                                                    </div>
+                                            </lightning-layout>
+                                        </td>
+                                        <td>
                                             <lightning-layout multiple-rows vertical-align="center" class="x-large">
-                                                    <lightning-layout-item flexibility="auto" padding="around-small">
-                                           <template for:each={keyValue.value} for:item="value">
-                                               <div class="custom-box slds-box slds-p-around_medium slds-text-align_center slds-size_1-of-2" key={value}>
-
-                                                {value}
-                                                   <lightning-input data-item={value} name={value} data-parent={keyValue.key}
-                                                                   onchange={handleChildSequence} value={value.childSeqNum}>
-                                                   </lightning-input> 
-
-                                               </div>
-                                           </template>
-                                        </lightning-layout-item>
-                                        </lightning-layout>
-                                       </td> 
-                                   </tr>
-                               </template>
-                   </tbody>
-               </table>
-               <lightning-button variant="brand" label="Save and Next"
-                                 title="Save" onclick={handleClick}
-                                 class="slds-m-left_x-small">
-                </lightning-button>
-                <lightning-button variant="brand" label="Reset"
-                                  title="Save" onclick={handleResetClick}
-                                  class="slds-m-left_x-small">
-                </lightning-button>
-           </template>
-        </template> 
+                                                <template for:each={keyValue.value} for:item="value">
+                                                    <div class="slds-grow slds-cell-wrap custom-box slds-box slds-p-around_medium slds-text-align_center slds-size_1-of-4" key={value}>
+                                                        <lightning-layout-item flexibility="auto" padding="around-small">
+                                                            <b>{value}</b>
+                                                        </lightning-layout-item>
+                                                        <lightning-layout-item flexibility="auto" padding="around-small" size="2">
+                                                            <lightning-input data-item={value} name={value} data-parent={keyValue.key}
+                                                                            onchange={handleChildSequence} value={value.childSeqNum}>
+                                                            </lightning-input>
+                                                        </lightning-layout-item>
+                                                    </div>
+                                                </template>
+                                            </lightning-layout>
+                                        </td> 
+                                    </tr>
+                                </template>
+                    </tbody>
+                </table>
+                <br>
+                <lightning-button variant="brand" label="Save and Next"
+                                    title="Save" onclick={handleClick}
+                                    class="slds-m-left_x-small">
+                    </lightning-button>
+                    <lightning-button variant="brand" label="Reset"
+                                    title="Save" onclick={handleResetClick}
+                                    class="slds-m-left_x-small">
+                    </lightning-button>
+                     </lightning-card>
+            </template>
+            </template> 
        </template>

@@ -19,6 +19,7 @@ export default class RetrieveRecord extends LightningElement {
     @track columns;
     @track isRecordsVisible; //decision to make if this dynamic table to be shown.
     @track isVisibleComp;
+    @track firstScrnVisible;
     //retrieve data from databased
     @wire(retreieveRecords,{objectName:'$objectName'
                             ,fieldAPINames:'$fieldAPINames',
@@ -65,7 +66,7 @@ export default class RetrieveRecord extends LightningElement {
         this.columns = this.items;
         this.isRecordsVisible = true;
         this.showNewComp =args.myCompVisible;
-
+        
         console.log('this.showNewComp='+ this.showNewComp);
     }
 
@@ -75,6 +76,7 @@ export default class RetrieveRecord extends LightningElement {
         this.columns = [];
         this.data = [];
         this.showNewComp=this.isVisibleComp;
+
         console.log('Reset hand==='+this.isVisibleComp);
         
 
@@ -82,7 +84,7 @@ export default class RetrieveRecord extends LightningElement {
     retrieveHandler(event){
         args = JSON.parse(JSON.stringify(event.detail));
         this.showNewComp= args.myComp;
-        console.log('retreive Hnd=== '+ this.showNewComp);
+        this.firstScrnVisible=args.firstScrnVisible;
         //console.log(args.showComp);
         
     }

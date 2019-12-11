@@ -35,6 +35,7 @@ export default class listOfAllsObjects extends LightningElement {
     @track selectedFieldsValue='';  //Objects selected in datatable
     @track tableData;  //data for list of Objects datatable
     @track showScreen=false;
+    @track hideObjectScreen=true;
 
     @wire(retreieveObjects)
     wiredObjects({ error, data }) {
@@ -51,7 +52,6 @@ export default class listOfAllsObjects extends LightningElement {
         // console.log('data:'+this.objectItems);
             this.tableData = this.objectItems;
             this.showScreen=true;
-            console.log(this.showScreen);
             this.error = undefined;
         } else if (error) {
             this.error = error;
@@ -119,6 +119,9 @@ export default class listOfAllsObjects extends LightningElement {
         
         const selectedFieldsValueParam = this.selectedFieldsValue;
         const showComp = this.showScreen;
+        this.hideObjectScreen=false;
+        const isHideObjectScreen= this.hideObjectScreen;
+        
         //console.log('Hi' +showComp);
         // console.log('selectedFieldsValueParam=='+this.selectedFieldsValue);
         // console.log('selectedFieldsValueParam= '+selectedFieldsValueParam);
@@ -135,7 +138,7 @@ export default class listOfAllsObjects extends LightningElement {
         else {
             //propage event to next component
             const evtCustomEvent = new CustomEvent('retreive', {
-                detail: { selectedFieldsValueParam,showComp}
+                detail: { selectedFieldsValueParam,showComp,isHideObjectScreen}
                 });
             this.dispatchEvent(evtCustomEvent);
         }

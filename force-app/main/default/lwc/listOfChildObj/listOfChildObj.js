@@ -26,13 +26,14 @@ export default class listOfChildObj extends LightningElement {
     @track columns;
     @track isRecordsVisible; //decision to make if this dynamic table to be shown.
     @track compShow=false;
+    @track firstCompHide=true;
     @track childSeqNum;
     @track arrayValue=[];
     childItems=[];
     parentItems=[{parObj:'',parValue:''}];
      myList=[
                         { item : '', value : '', parentObjName:''}
-                  ];
+            ];
     //retrieve data from databased
 
     @track mapOfListValues = [];
@@ -76,10 +77,10 @@ export default class listOfChildObj extends LightningElement {
     retriveRecordHandler(event){
         // console.log('retriveRecordHandler is fired');
         args = JSON.parse(JSON.stringify(event.detail));
-
-        this.objectListApiName = args.selectedFieldsValueParam;
-        
+        this.objectListApiName = args.selectedFieldsValueParam;        
         this.isRecordsVisible = args.showComp;
+        this.firstCompHide=args.isHideObjectScreen;
+
     }
 
     handleParentSequence(event){
@@ -194,6 +195,11 @@ export default class listOfChildObj extends LightningElement {
     handleResetClick(){
         this.selectedFieldsValue='';
         this.isRecordsVisible =false;
+
+        this.firstCompHide=true;
+        this.objectListApiName='';
+        this.mapOfListValues=[];
+        
         const evtCustomEvent = new CustomEvent('reset');
         this.dispatchEvent(evtCustomEvent);
     }
