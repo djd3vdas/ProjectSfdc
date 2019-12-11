@@ -160,32 +160,72 @@ public inherited sharing class DescribeObjectHelper {
              Integer i=0;
              system.debug('Hi=='+ listOfValue);
              system.debug('Parent Value=='+ listOfParentValue);
+             List<String> matchList=new List<String>();
              /* Deserialize from Array of Object to List of ItemClass Wrapper*/
              List<ItemClass> lstItem = (List<ItemClass>) JSON.deserialize(listOfValue, List<ItemClass>.class);
 //             List<ItemClass> listSobjNew = new List<ItemClass>(new Set<ItemClass>(lstItem));
              List<ParentItemClass> lstParentItem = (List<ParentItemClass>) JSON.deserialize(listOfParentValue, List<ParentItemClass>.class);
              
-             List<Object_Sequence__c> addData= new List<Object_Sequence__c>();
+             for(ParentItemClass p:lstParentItem)
+             {
+                 matchList.add(p.parObj);
+             }
+             
              List<Object_Archive__c> addParentData= new List<Object_Archive__c>();
-			 
+             List<Object_Archive__c> getRecords = [Select Parent_Object_API_Name__c,Obj_Seq_Id__c,Parent_Obj_Name__c
+                                              	   from Object_Archive__c where Parent_Object_API_Name__c in :matchList];
+             
+             if(getRecords.size()>0){
+                 delete getRecords;
+                 getRecords.clear();
+             }
+             
+             List<Object_Sequence__c> addData= new List<Object_Sequence__c>();
+             List<Object_Sequence__c> getChildRecords = [Select Child_Object_API_Name__c,Child_Object_Sequence_No__c,
+                                                         		Parent_Obj_Seq_Id__c,Parent_Object_API_Name__c
+                                              	     	 from Object_Sequence__c where Parent_Object_API_Name__c in :matchList];
+			 if(getChildRecords.size()>0){
+                 delete getChildRecords;
+                 getChildRecords.clear(); 
+             }
+             System.debug('getChildRecords size === '+getChildRecords.size());
+                 System.debug('getRecords size === '+getRecords.size());
+             
             for(ParentItemClass objPar: lstParentItem){
+                
+                If(getRecords.isEmpty()){
                   addParentData.add(new Object_Archive__c(Parent_Object_API_Name__c = objPar.parObj,
-                                                            Obj_Seq_Id__c = Integer.valueOf(objPar.parValue),
-                                                            Parent_Obj_Name__c = objPar.parObj));
+                                                          Obj_Seq_Id__c = Integer.valueOf(objPar.parValue),
+                                                          Parent_Obj_Name__c = objPar.parObj));
+                    System.debug('addParentData === '+addParentData);
+                }                                                          
                  for(ItemClass obj: lstItem){
-                     if(obj.parentObjName==objPar.parObj){
-                         addData.add(new Object_Sequence__c(Child_Object_API_Name__c = obj.item,
-                                                            Child_Object_Sequence_No__c = Integer.valueOf(obj.value),
-                                                            Parent_Obj_Seq_Id__c=Integer.valueOf(objPar.parValue),
-                                                            Parent_Object_API_Name__c =obj.parentObjName));
+                     
+                     If(getChildRecords.isEmpty()){
+                         if(obj.parentObjName==objPar.parObj){
+                             addData.add(new Object_Sequence__c(Child_Object_API_Name__c = obj.item,
+                                                                Child_Object_Sequence_No__c = Integer.valueOf(obj.value),
+                                                                Parent_Obj_Seq_Id__c=Integer.valueOf(objPar.parValue),
+                                                                Parent_Object_API_Name__c =obj.parentObjName));
+                             System.debug('addData === '+ addData);
+
+                    	 }
                      }
-              		
                  }
              }
-             List<Object_Sequence__c> listSobjNew = new List<Object_Sequence__c>(new Set<Object_Sequence__c>(addData));
+             //List<Object_Sequence__c> listSobjNew = new List<Object_Sequence__c>(new Set<Object_Sequence__c>(addData));
              try{
-                insert listSobjNew;
-                insert addParentData;
+                 System.debug('addParentData size === '+addParentData.size());
+                 System.debug('addData size === '+addData.size());
+
+                 if(addParentData.size()>0){
+                     insert addParentData;
+                 }
+                  if(addData.size()>0){
+                     insert addData;
+                 }
+                    
+                    
              }catch(DmlException e){
                  System.debug('An unexpected error has occurred: ' + e.getMessage());
              }
