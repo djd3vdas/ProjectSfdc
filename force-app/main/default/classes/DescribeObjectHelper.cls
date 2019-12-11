@@ -155,9 +155,7 @@ public inherited sharing class DescribeObjectHelper {
                 this.size=size;
             }
     }
-        
-
-        @AuraEnabled
+      @AuraEnabled
          public static String createRecords(String listOfValue, String listOfParentValue){
              Integer i=0;
              system.debug('Hi=='+ listOfValue);
@@ -193,6 +191,7 @@ public inherited sharing class DescribeObjectHelper {
              }
              return 'Success';
          }
+    
     @AuraEnabled
     public static String createBORecords(String objName, String listOfFields, String queryCondition){
        List<Archival_BO_Field__c> newBORecord= new List<Archival_BO_Field__c>(); 
